@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Registros de presencia de orquídeas en Costa Rica "
 author: "Sara Alvarado Siles"
 output: html_document
 ---
@@ -7,16 +7,19 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-## Carga los paquetes
 
->library(sf)
- library(leaflet)
- library(leaflet.extras)
- library(leafem)
- library(dplyr)
- library(raster)
+## Preparativos
+
+### Cargar los paquetes
+
+>library(sf)  
+ library(leaflet)  
+ library(leaflet.extras)  
+ library(leafem)  
+ library(dplyr)  
+ library(raster)  
  
-```{r carga_paquetes, message=FALSE, warning=FALSE}
+```{r carga_paquetes, message=FALSE, warning=FALSE, echo=FALSE}
 library(sf)
 library(leaflet)
 library(leaflet.extras)
@@ -24,14 +27,13 @@ library(leafem)
 library(dplyr)
 library(raster)
 ```
+### Cargar los datos 
+
 <br/>
 
-## Cargar los datos 
-
-### Capa sobre los registros de presencia de orquídeas en Costa Rica
+#### Capa sobre los registros de orquídeas en Costa Rica
 
 ```{r capa_orquideas, message=FALSE, warning=FALSE}
-
 # Carga de la capa de orquídeas (familia Orchidaceae)
 orquideas <-
   st_read(
@@ -42,14 +44,19 @@ orquideas <-
     ),
     quiet = TRUE
   )
-
-# Asignación del sistema de coordenadas
-st_crs(orquideas) <- 4326
 ```
 
 <br/>
 
-###  Capa sobre las areas silvestres protegidas de Costa Rica 
+#### Asignacion del sistema de coordenadas
+
+```{r sistema_coordenadas, message=FALSE, warning=FALSE}
+# Asignación del sistema de coordenadas
+st_crs(orquideas) <- 4326
+```
+<br/>
+
+####  Capa sobre las areas silvestres protegidas de Costa Rica 
 
 ```{r capa_asp, message=FALSE, warning=FALSE}
 
@@ -61,14 +68,47 @@ asp <-
   )
 ```
 
-
 ## Introduccion
+Se utilisa el conjunto de datos sobre la presencia de orquideas en Costa Rica y las areas protegidas en las que se encuentran.
 
-##  Elimine los registros con un valor mayor que 1000 
+<br/>
 
-##  Elimine los registros con valor vacío o NA
+## Limpieza de los conjuntos de datos
 
-## En el conjunto de datos de ASP, elimine los registros con valor de “Area Marina de Manejo” o “Area marina protegida”
+### Paso 1
+
+Ver la cantidad de registros original.
+```{r registros_original, message=FALSE, warning=FALSE}
+
+# Registros originales
+cat("cantidad original de registros: ", nrow(orquideas))
+```
+
+### Paso 2 
+
+Eliminar los registros con un valor de incertidumbre en la ubicacion mayor a 1000. 
+
+```{r eliminar_intumtitumbre_mayor_1000, message=FALSE, warning=FALSE}
+
+# Descartar registros con alta insertidumbre 
+orquideas <- 
+  orquideas %>%
+  filter(coordinateUncertaintyInMeters <= 1000)
+```
+
+### Paso 3
+
+Ver la cantidad de registros restantes.
+
+```{r registros_restantes, message=FALSE, warning=FALSE}
+
+# Registros restantes
+cat("cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: ", nrow(orquideas))
+```
+
+###  Elimine los registros con valor vacío o NA
+
+### En el conjunto de datos de ASP, elimine los registros con valor de “Area Marina de Manejo” o “Area marina protegida”
 
 ## Mapa Leaflet
 
