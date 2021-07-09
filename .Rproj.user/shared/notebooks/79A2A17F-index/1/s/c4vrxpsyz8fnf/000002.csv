@@ -1,0 +1,9 @@
+"0",""
+"0","# Carga de la capa de orquídeas (familia Orchidaceae)"
+"0","orquideas <-"
+"0","  st_read("
+"0","    ""https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/gbif/orchidaceae-cr-registros.csv."","
+"0","    quiet = TRUE"
+"0","  )"
+"2","Error: Cannot open ""https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/gbif/orchidaceae-cr-registros.csv.""; The file doesn't seem to exist.
+"

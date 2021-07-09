@@ -1,0 +1,74 @@
+---
+title: ""
+author: "Sara Alvarado Siles"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Carga los paquetes
+
+>library(sf)
+ library(leaflet)
+ library(leaflet.extras)
+ library(leafem)
+ library(dplyr)
+ library(raster)
+ 
+```{r carga_paquetes, message=FALSE, warning=FALSE}
+library(sf)
+library(leaflet)
+library(leaflet.extras)
+library(leafem)
+library(dplyr)
+library(raster)
+```
+<br/>
+
+## Cargar los datos 
+
+### Capa sobre los registros de presencia de orquídeas en Costa Rica
+
+```{r capa_orquideas, message=FALSE, warning=FALSE}
+
+# Carga de la capa de orquídeas (familia Orchidaceae)
+orquideas <-
+  st_read(
+    "https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/gbif/orchidaceae-cr-registros.csv",
+    options = c(
+      "X_POSSIBLE_NAMES=decimalLongitude",
+      "Y_POSSIBLE_NAMES=decimalLatitude"
+    ),
+    quiet = TRUE
+  )
+
+# Asignación del sistema de coordenadas
+st_crs(orquideas) <- 4326
+```
+
+<br/>
+
+###  Capa sobre las areas silvestres protegidas de Costa Rica 
+
+```{r capa_asp, message=FALSE, warning=FALSE}
+
+# Carga de la capa de áreas silvestres protegidas (ASP)
+asp <-
+  st_read(
+    "https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson",
+    quiet = TRUE
+  )
+```
+
+
+## Introduccion
+
+##  Elimine los registros con un valor mayor que 1000 
+
+##  Elimine los registros con valor vacío o NA
+
+## En el conjunto de datos de ASP, elimine los registros con valor de “Area Marina de Manejo” o “Area marina protegida”
+
+## Mapa Leaflet
+

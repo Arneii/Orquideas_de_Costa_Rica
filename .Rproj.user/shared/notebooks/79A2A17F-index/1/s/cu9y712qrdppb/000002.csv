@@ -1,0 +1,12 @@
+"0",""
+"0","# Carga de la capa de áreas silvestres protegidas (ASP)"
+"0","asp <-"
+"0","  st_read("
+"0","    ""https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2021i-datos/main/sinac/asp/asp-wgs84.geojson"","
+"0","    quiet = TRUE"
+"0","  )"
+"0",""
+"0","# Asignación del sistema de coordenadas"
+"0","st_crs(orquideas) <- 4326"
+"2","Error in st_crs(orquideas) <- 4326 : objeto 'orquideas' no encontrado
+"
