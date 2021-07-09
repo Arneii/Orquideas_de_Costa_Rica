@@ -1,0 +1,11 @@
+"0","# Eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”"
+"0",""
+"0","asp <-"
+"0","  asp %>%"
+"0","  filter(order != ""descripcio"") %>%"
+"0","  st_transform(crs = 5367)"
+"2","Error: Problem with `filter()` input `..1`.
+[34mi[39m Input `..1` is `order != ""descripcio""`.
+[31mx[39m comparación  (2) es posible solo para tipos lista y atómico
+[90mRun `rlang::last_error()` to see where the error occurred.[39m
+"

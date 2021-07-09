@@ -73,7 +73,7 @@ Se utilisa el conjunto de datos sobre la presencia de orquideas en Costa Rica y 
 
 <br/>
 
-## Limpieza de los conjuntos de datos
+## Limpiar el conjunto de datos
 
 ### Paso 1
 
@@ -86,7 +86,7 @@ cat("cantidad original de registros: ", nrow(orquideas))
 
 ### Paso 2 
 
-Eliminar los registros con un valor de incertidumbre en la ubicacion mayor a 1000. 
+Eliminar los registros con un valor de incertidumbre en la ubicacion mayor a 1000 m. 
 
 ```{r eliminar_intumtitumbre_mayor_1000, message=FALSE, warning=FALSE}
 
@@ -106,9 +106,32 @@ Ver la cantidad de registros restantes.
 cat("cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: ", nrow(orquideas))
 ```
 
-###  Elimine los registros con valor vacío o NA
+###  Paso 4
 
-### En el conjunto de datos de ASP, elimine los registros con valor de “Area Marina de Manejo” o “Area marina protegida”
+Eliminar los registros con valor vacío o NA en el campo de la especie.
+
+```{r eliminar_NA, message=FALSE, warning=FALSE}
+
+# Eliminar vacios y NA
+orquideas <-
+  orquideas %>%
+  filter(!is.na(species) & species != "") 
+```
+
+### Paso 5
+En el conjunto de datos de ASP, eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”.
+
+```{r zonas_terrestres, message=FALSE, warning=FALSE}
+
+# Eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”
+asp_terrestres <-
+  asp %>%
+  filter(descripcio != "Area Marina de Manejo") %>%
+  filter(descripcio != "Area marina protegida") %>%
+  st_transform(crs = 5367)
+
+```
+
 
 ## Mapa Leaflet
 

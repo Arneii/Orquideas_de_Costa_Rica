@@ -1,0 +1,5 @@
+"0",""
+"0","# Descartar registros con alta insertidumbre "
+"0","orquideas <- "
+"0","  orquideas %>%"
+"0","  filter(coordinateUncertaintyInMeters <= 1000)"

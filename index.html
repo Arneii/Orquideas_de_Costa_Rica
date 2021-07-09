@@ -220,14 +220,15 @@ asp &lt;-
 <div id="introduccion" class="section level2">
 <h2>Introduccion</h2>
 <p>Se utilisa el conjunto de datos sobre la presencia de orquideas en Costa Rica y las areas protegidas en las que se encuentran.</p>
-</div>
-<div id="limpieza-de-los-conjuntos-de-datos" class="section level2">
-<h2>Limpieza de los conjuntos de datos</h2>
 <p><br /></p>
+</div>
+<div id="limpiar-los-conjuntos-de-datos" class="section level2">
+<h2>Limpiar los conjuntos de datos</h2>
 <div id="paso-1" class="section level3">
 <h3>Paso 1</h3>
 <p>Ver la cantidad de registros original.</p>
-<pre class="r"><code>cat(&quot;cantidad original de registros: &quot;, nrow(orquideas))</code></pre>
+<pre class="r"><code># Registros originales
+cat(&quot;cantidad original de registros: &quot;, nrow(orquideas))</code></pre>
 <pre><code>## cantidad original de registros:  29863</code></pre>
 </div>
 <div id="paso-2" class="section level3">
@@ -238,14 +239,19 @@ orquideas &lt;-
   orquideas %&gt;%
   filter(coordinateUncertaintyInMeters &lt;= 1000)</code></pre>
 </div>
-<div id="paso-2-1" class="section level3">
-<h3>Paso 2</h3>
+<div id="paso-3" class="section level3">
+<h3>Paso 3</h3>
 <p>Ver la cantidad de registros restantes.</p>
-<pre class="r"><code>cat(&quot;cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: &quot;, nrow(orquideas))</code></pre>
+<pre class="r"><code># Registros restantes
+cat(&quot;cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: &quot;, nrow(orquideas))</code></pre>
 <pre><code>## cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion:  28406</code></pre>
 </div>
-<div id="elimine-los-registros-con-valor-vacío-o-na" class="section level3">
-<h3>Elimine los registros con valor vacío o NA</h3>
+<div id="eliminar-los-registros-con-valor-vacío-o-na" class="section level3">
+<h3>Eliminar los registros con valor vacío o NA</h3>
+<pre class="r"><code># Eliminar vacios y NA
+orquideas &lt;-
+  orquideas %&gt;%
+  filter(!is.na(species) &amp; species != &quot;&quot;) </code></pre>
 </div>
 <div id="en-el-conjunto-de-datos-de-asp-elimine-los-registros-con-valor-de-area-marina-de-manejo-o-area-marina-protegida" class="section level3">
 <h3>En el conjunto de datos de ASP, elimine los registros con valor de “Area Marina de Manejo” o “Area marina protegida”</h3>

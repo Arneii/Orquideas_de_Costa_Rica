@@ -1,0 +1,6 @@
+"0",""
+"0","# Registros restantes"
+"0","cat(""cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: "", nrow(orquideas))"
+"1","cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: "
+"1"," "
+"1","28406"

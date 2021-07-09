@@ -1,0 +1,8 @@
+"0",""
+"0","# Eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”"
+"0","asp_terrestres <-"
+"0","  asp %>%"
+"0","  filter(descripcio != ""Area Marina de Manejo"") %>%"
+"0","  filter(descripcio != ""Area marina protegida"") %>%"
+"0","  st_transform(crs = 5367)"
+"0",""
