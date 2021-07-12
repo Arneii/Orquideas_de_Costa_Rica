@@ -7,6 +7,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Introducción
+Para realizar esta tarea se utilizan los conjuntos de datos registrados sobre la presencia de orquídeas (familia Orchidaceae) y las áreas silvestres protegidas (ASP) de Costa Rica.
+
+<br/>
+
 # Preparativos
 
 ## Cargar los paquetes
@@ -31,7 +36,6 @@ library(rmapshaper)
 
 ## Cargar los datos 
 
-
 ### Paso 1
 
 Cargar la capa sobre los registros de orquídeas en Costa Rica.
@@ -49,7 +53,7 @@ orquideas <-
   )
 ```
 
-##### Asignacion del sistema de coordenadas
+##### Asignación del sistema de coordenadas.
 
 ```{r coordenadas_orquideas, message=FALSE, warning=FALSE}
 st_crs(orquideas) <- 4326
@@ -58,7 +62,7 @@ st_crs(orquideas) <- 4326
 
 ### Paso 2
 
-Cargar la capa sobre los registros de las areas silvestres protegidas en Costa Rica.
+Cargar la capa sobre los registros de las áreas silvestres protegidas en Costa Rica.
 
 ```{r capa_asp, message=FALSE, warning=FALSE}
 # Carga de la capa de áreas silvestres protegidas (ASP)
@@ -69,7 +73,8 @@ asp <-
   )
 ```
 
-##### Asignacion del sistema de coordenadas
+##### Asignación del sistema de coordenadas.
+
 ```{r coordenadas_asp, message=FALSE, warning=FALSE}
 st_crs(asp) <- 4326
 ```
@@ -86,10 +91,10 @@ cat("cantidad original de registros: ", nrow(orquideas))
 
 ### Paso 1
 
-Eliminar los registros con un valor de incertidumbre en la ubicacion mayor a 1000 m. 
+Eliminar los registros con un valor de incertidumbre en la ubicación mayor a 1000 m. 
 
-```{r eliminar_insertidumbre, message=FALSE, warning=FALSE}
-# Descartar registros con alta insertidumbre 
+```{r eliminar_incertidumbre, message=FALSE, warning=FALSE}
+# Descartar registros con alta incertidumbre 
 orquideas <- 
   orquideas %>%
   filter(coordinateUncertaintyInMeters <= 1000)
@@ -134,7 +139,7 @@ cat("Cantidad de registros despues de realizar los cambios: ", nrow(orquideas))
 
 ### Paso 1
 
-Creacion de un conjunto de datos con la cantidad de especies por area silvestre protegida.
+Creación de un conjunto de datos con la cantidad de especies por área silvestre protegida.
 
 ```{r especies_por_asp, message=FALSE, warning=FALSE}
 # Conjunto de datos de especies por asp
@@ -148,7 +153,8 @@ asp_especies <-
 
 ### Paso 2
 
-Crear una peleta con la coloracion adecuada.
+Crear una paleta con la coloración adecuada.
+
 ```{r paleta_de_colores, message=FALSE, warning=FALSE}
 # Paleta de colores
 colores_especies <-
@@ -163,10 +169,11 @@ colores_especies <-
 ### Paso 3
 
 Crear un mapa leaflet para visualizar el resultado.
+
 ```{r mapa_leaflet, message=FALSE, warning=FALSE}
 # Mapa Leaflet
 leaflet() %>%
-  addTiles(group = "OMS") %>%
+  addTiles(group = "OpenStreetMap") %>%
   addPolygons(
     data = asp_especies,
     fillColor = ~ colores_especies(asp_especies$especies),
@@ -185,7 +192,7 @@ leaflet() %>%
       ),
       sep = '<br/>'
     ),
-    group = "ASP - especies"
+    group = "Especies por asp"
   ) %>%
   addCircleMarkers(
     data = orquideas,
@@ -197,15 +204,16 @@ leaflet() %>%
       orquideas$species,
       orquideas$family
     ),
-    group = "Orquideas"
+    clusterOptions = markerClusterOptions(),
+    group = "Orquídeas"
   ) %>%
-  addLayersControl(baseGroups = c("OMS"),
-                   overlayGroups = c("ASP - especies", "Orquideas")) %>%
+  addLayersControl(baseGroups = c("OpenStreetMap"),
+                   overlayGroups = c("Especies por asp", "Orquídeas")) %>%
   addLegend(
     position = "bottomleft",
     pal = colores_especies,
     values = asp_especies$especies,
-    group = "ASP - especies",
+    group = "Especies por asp",
     title = "Cantidad de especies"
   ) %>%
   addResetMapButton() %>%
