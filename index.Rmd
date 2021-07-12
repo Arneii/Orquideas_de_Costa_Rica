@@ -3,14 +3,13 @@ title: "Registros de presencia de orquídeas en Costa Rica "
 author: "Sara Alvarado Siles"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Preparativos
+# Preparativos
 
-### Cargar los paquetes
+## Cargar los paquetes
 
 >library(sf)  
  library(leaflet)  
@@ -20,18 +19,22 @@ knitr::opts_chunk$set(echo = TRUE)
  library(raster)  
  
 ```{r carga_paquetes, message=FALSE, warning=FALSE, echo=FALSE}
+# cargar los datos
 library(sf)
 library(leaflet)
 library(leaflet.extras)
 library(leafem)
 library(dplyr)
 library(raster)
+library(rmapshaper)
 ```
-### Cargar los datos 
 
-<br/>
+## Cargar los datos 
 
-#### Capa sobre los registros de orquídeas en Costa Rica
+
+### Paso 1
+
+Cargar la capa sobre los registros de orquídeas en Costa Rica.
 
 ```{r capa_orquideas, message=FALSE, warning=FALSE}
 # Carga de la capa de orquídeas (familia Orchidaceae)
@@ -46,20 +49,18 @@ orquideas <-
   )
 ```
 
-<br/>
+##### Asignacion del sistema de coordenadas
 
-#### Asignacion del sistema de coordenadas
-
-```{r sistema_coordenadas, message=FALSE, warning=FALSE}
-# Asignación del sistema de coordenadas
+```{r coordenadas_orquideas, message=FALSE, warning=FALSE}
 st_crs(orquideas) <- 4326
 ```
 <br/>
 
-####  Capa sobre las areas silvestres protegidas de Costa Rica 
+### Paso 2
+
+Cargar la capa sobre los registros de las areas silvestres protegidas en Costa Rica.
 
 ```{r capa_asp, message=FALSE, warning=FALSE}
-
 # Carga de la capa de áreas silvestres protegidas (ASP)
 asp <-
   st_read(
@@ -68,70 +69,145 @@ asp <-
   )
 ```
 
-## Introduccion
-Se utilisa el conjunto de datos sobre la presencia de orquideas en Costa Rica y las areas protegidas en las que se encuentran.
-
+##### Asignacion del sistema de coordenadas
+```{r coordenadas_asp, message=FALSE, warning=FALSE}
+st_crs(asp) <- 4326
+```
 <br/>
 
-## Limpiar el conjunto de datos
+#### Ver la cantidad de registros original.
+
+```{r cantidad_original, message=FALSE, warning=FALSE}
+cat("cantidad original de registros: ", nrow(orquideas))
+```
+<br/>
+
+# Limpieza del conjunto de datos
 
 ### Paso 1
 
-Ver la cantidad de registros original.
-```{r registros_original, message=FALSE, warning=FALSE}
-
-# Registros originales
-cat("cantidad original de registros: ", nrow(orquideas))
-```
-
-### Paso 2 
-
 Eliminar los registros con un valor de incertidumbre en la ubicacion mayor a 1000 m. 
 
-```{r eliminar_intumtitumbre_mayor_1000, message=FALSE, warning=FALSE}
-
+```{r eliminar_insertidumbre, message=FALSE, warning=FALSE}
 # Descartar registros con alta insertidumbre 
 orquideas <- 
   orquideas %>%
   filter(coordinateUncertaintyInMeters <= 1000)
 ```
+<br/>
 
-### Paso 3
-
-Ver la cantidad de registros restantes.
-
-```{r registros_restantes, message=FALSE, warning=FALSE}
-
-# Registros restantes
-cat("cantidad de registros depues de descartar los datos de alta incertitumbre en la ubicacion: ", nrow(orquideas))
-```
-
-###  Paso 4
+### Paso 2
 
 Eliminar los registros con valor vacío o NA en el campo de la especie.
 
-```{r eliminar_NA, message=FALSE, warning=FALSE}
-
+```{r elinimar_NA, message=FALSE, warning=FALSE}
 # Eliminar vacios y NA
 orquideas <-
   orquideas %>%
   filter(!is.na(species) & species != "") 
 ```
+<br/>
 
-### Paso 5
+### Paso 3
+
 En el conjunto de datos de ASP, eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”.
 
-```{r zonas_terrestres, message=FALSE, warning=FALSE}
-
+```{r eliminar_asp_marinas, message=FALSE, warning=FALSE}
 # Eliminar los registros que presenten valor de “Area Marina de Manejo” o “Area marina protegida”
 asp_terrestres <-
   asp %>%
   filter(descripcio != "Area Marina de Manejo") %>%
   filter(descripcio != "Area marina protegida") %>%
-  st_transform(crs = 5367)
-
+  st_transform(crs = 4326)
 ```
+<br/>
+
+#### Ver la cantidad de registros restantes.
+
+```{r cantidad_restante, message=FALSE, warning=FALSE}
+cat("Cantidad de registros despues de realizar los cambios: ", nrow(orquideas))
+```
+<br/>
+
+# Mapa Leaflet
 
 
-## Mapa Leaflet
+### Paso 1
 
+Creacion de un conjunto de datos con la cantidad de especies por area silvestre protegida.
+
+```{r especies_por_asp, message=FALSE, warning=FALSE}
+# Conjunto de datos de especies por asp
+asp_especies <-
+  asp_terrestres %>%
+  st_join(orquideas) %>%
+  group_by(nombre_asp) %>%
+  summarize(especies = n_distinct(species, na.rm = TRUE)) 
+```
+<br/>
+
+### Paso 2
+
+Crear una peleta con la coloracion adecuada.
+```{r paleta_de_colores, message=FALSE, warning=FALSE}
+# Paleta de colores
+colores_especies <-
+  colorNumeric(
+    palette = "Reds",
+    domain = asp_especies$especies,
+    na.color = "transparent"
+  )
+```
+<br/>
+
+### Paso 3
+
+Crear un mapa leaflet para visualizar el resultado.
+```{r mapa_leaflet, message=FALSE, warning=FALSE}
+# Mapa Leaflet
+leaflet() %>%
+  addTiles(group = "OMS") %>%
+  addPolygons(
+    data = asp_especies,
+    fillColor = ~ colores_especies(asp_especies$especies),
+    fillOpacity = 0.7,
+    stroke = TRUE,
+    color = "black",
+    weight = 1,
+    popup = paste(
+      paste(
+        "<strong>Area silvestre protegida:</strong>",
+        asp_especies$nombre_asp
+      ),
+      paste(
+        "<strong>Cantidad de especies registradas:</strong>",
+        asp_especies$especies
+      ),
+      sep = '<br/>'
+    ),
+    group = "ASP - especies"
+  ) %>%
+  addCircleMarkers(
+    data = orquideas,
+    stroke = F,
+    radius = 2,
+    fillColor = 'red',
+    fillOpacity = 0.6,
+    popup = paste(
+      orquideas$species,
+      orquideas$family
+    ),
+    group = "Orquideas"
+  ) %>%
+  addLayersControl(baseGroups = c("OMS"),
+                   overlayGroups = c("ASP - especies", "Orquideas")) %>%
+  addLegend(
+    position = "bottomleft",
+    pal = colores_especies,
+    values = asp_especies$especies,
+    group = "ASP - especies",
+    title = "Cantidad de especies"
+  ) %>%
+  addResetMapButton() %>%
+  addMouseCoordinates() 
+```
